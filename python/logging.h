@@ -3,7 +3,7 @@
 
 #include <util/Logger.h>
 
-namespace _maxflow {
+namespace surfrec {
 
 extern logger::LogChannel pylog;
 
@@ -17,7 +17,7 @@ logger::LogLevel getLogLevel();
  */
 void setLogLevel(logger::LogLevel logLevel);
 
-} // namespace _maxflow
+} // namespace surfrec
 
 #endif // PYMAXFLOW_PYTHON_LOGGING_H__
 

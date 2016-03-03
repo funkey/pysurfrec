@@ -67,7 +67,7 @@ public:
 
 private:
 
-	typedef lemon::ListDigraph GraphType;
+	typedef lemon::ListGraph GraphType;
 
 	GraphType _graph;
 	GraphType::NodeMap<std::vector<double>> _level_costs;

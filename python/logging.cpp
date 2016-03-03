@@ -1,6 +1,6 @@
 #include "logging.h"
 
-namespace _maxflow {
+namespace surfrec {
 
 logger::LogChannel pylog("pylog", "[maxflow] ");
 
@@ -12,4 +12,4 @@ void setLogLevel(logger::LogLevel logLevel) {
 	logger::LogManager::setGlobalLogLevel(logLevel);
 }
 
-} // namespace _maxflow
+} // namespace surfrec
