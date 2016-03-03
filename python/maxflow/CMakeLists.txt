@@ -1,0 +1,5 @@
+define_module(_maxflow LIBRARY LINKS maxflow boost-python)
+add_custom_target(rename_maxflow_lib ALL COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/python/maxflow/lib_maxflow.so ${CMAKE_BINARY_DIR}/python/maxflow/_maxflow.so)
+add_custom_target(copy_maxflow_init ALL COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/python/maxflow/__init__.py ${CMAKE_BINARY_DIR}/python/maxflow/__init__.py)
+add_dependencies(rename_maxflow_lib _maxflow)
+add_dependencies(copy_maxflow_init _maxflow)
