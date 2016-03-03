@@ -77,19 +77,15 @@ IlpSolver::min_surface() {
 
 	LinearConstraints constraints;
 
-	// pick at least one constraints
+	// pick at least lowest level
 	LOG_DEBUG(ilpsolverlog) << "adding indicator constraints" << std::endl;
 	for (GraphType::NodeIt n(_graph); n != lemon::INVALID; ++n) {
 
+		std::size_t var_num = _graph.id(n)*_num_levels;
+
 		LinearConstraint indicator;
-
-		for (int l = 0; l < _num_levels; l++) {
-
-			std::size_t var_num = _graph.id(n)*_num_levels + l;
-			indicator.setCoefficient(var_num,  1.0);
-		}
-
-		indicator.setRelation(GreaterEqual);
+		indicator.setCoefficient(var_num, 1.0);
+		indicator.setRelation(Equal);
 		indicator.setValue(1.0);
 		constraints.add(indicator);
 	}
