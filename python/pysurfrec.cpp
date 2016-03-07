@@ -68,9 +68,11 @@ BOOST_PYTHON_MODULE(surfrec) {
 	// IlpSolver
 	boost::python::class_<IlpSolver, boost::noncopyable>("IlpSolver", boost::python::init<std::size_t, std::size_t, int, int>())
 			.def("add_nodes", &IlpSolver::add_nodes)
-			.def("add_edge", &IlpSolver::add_edge)
+			.def("add_edge", static_cast<void(IlpSolver::*)(IlpSolver::NodeId, IlpSolver::NodeId, int)>(&IlpSolver::add_edge))
+			.def("add_edge", static_cast<void(IlpSolver::*)(IlpSolver::NodeId, IlpSolver::NodeId)>(&IlpSolver::add_edge))
 			.def("set_level_costs", &IlpSolver::set_level_costs)
-			.def("min_surface", &IlpSolver::min_surface)
+			.def("min_surface", static_cast<double(IlpSolver::*)()>(&IlpSolver::min_surface))
+			.def("min_surface", static_cast<double(IlpSolver::*)(const IlpSolver::Parameters&)>(&IlpSolver::min_surface))
 			.def("level", &IlpSolver::level)
 			.def("dump_ilp", &IlpSolver::dump_ilp)
 			;

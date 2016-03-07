@@ -73,13 +73,18 @@ public:
 	void set_level_costs(NodeId n, const std::vector<double>& costs);
 
 	/**
-	 * Add a neighborhood edge between nodes u and v.
+	 * Add a neighborhood edge between nodes u and v. Optionally set the 
+	 * maximally allowed absolute difference between estimated values for u and 
+	 * v (i.e., the max gradient). If not set, uses max_gradient as set during 
+	 * construction.
 	 */
 	void add_edge(NodeId u, NodeId v);
+	void add_edge(NodeId u, NodeId v, int max_gradient);
 
 	/**
 	 * Find the cost-minimal surface.
 	 */
+	double min_surface();
 	double min_surface(const Parameters& parameters);
 
 	/**
@@ -99,6 +104,7 @@ private:
 
 	GraphType _graph;
 	GraphType::NodeMap<std::vector<double>> _level_costs;
+	GraphType::EdgeMap<int> _max_gradients;
 
 	std::size_t _num_nodes;
 	std::size_t _num_edges;

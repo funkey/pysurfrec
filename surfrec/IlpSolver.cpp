@@ -7,6 +7,7 @@ logger::LogChannel ilpsolverlog("ilpsolverlog", "[IlpSolver] ");
 
 IlpSolver::IlpSolver(std::size_t num_nodes, std::size_t num_edges, int num_levels, int max_gradient) :
 	_level_costs(_graph),
+	_max_gradients(_graph),
 	_num_nodes(0),
 	_num_edges(0),
 	_num_levels(num_levels),
@@ -34,11 +35,17 @@ IlpSolver::add_nodes(std::size_t num_nodes) {
 
 	return first;
 }
-
 void
 IlpSolver::add_edge(NodeId u, NodeId v) {
 
-	_graph.addEdge(_graph.nodeFromId(u), _graph.nodeFromId(v));
+	add_edge(u, v, _max_gradient);
+}
+
+void
+IlpSolver::add_edge(NodeId u, NodeId v, int g) {
+
+	GraphType::Edge e = _graph.addEdge(_graph.nodeFromId(u), _graph.nodeFromId(v));
+	_max_gradients[e] = g;
 	_num_edges++;
 }
 
@@ -46,6 +53,12 @@ void
 IlpSolver::set_level_costs(NodeId n, const std::vector<double>& costs) {
 
 	_level_costs[_graph.nodeFromId(n)] = costs;
+}
+
+double
+IlpSolver::min_surface() {
+
+	return min_surface(Parameters());
 }
 
 double
@@ -118,10 +131,10 @@ IlpSolver::min_surface(const Parameters& parameters) {
 			GraphType::Node u_ = p.first;
 			GraphType::Node v_ = p.second;
 
-			for (int l = _max_gradient; l < _num_levels; l++) {
+			for (int l = _max_gradients[e]; l < _num_levels; l++) {
 
 				std::size_t upper_var_num = _graph.id(u_)*_num_levels + l;
-				std::size_t lower_var_num = _graph.id(v_)*_num_levels + l - _max_gradient;
+				std::size_t lower_var_num = _graph.id(v_)*_num_levels + l - _max_gradients[e];
 
 				LinearConstraint inclusion;
 				inclusion.setCoefficient(upper_var_num,  1.0);
