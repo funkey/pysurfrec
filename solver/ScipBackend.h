@@ -55,7 +55,7 @@ public:
 
 	void addConstraint(const LinearConstraint& constraint);
 
-	bool solve(Solution& solution, std::string& message);
+	bool solve(Solution& solution, std::string& message, const LinearSolverBackend::Parameters& parameters = LinearSolverBackend::Parameters());
 
 private:
 

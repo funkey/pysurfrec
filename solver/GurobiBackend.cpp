@@ -18,14 +18,12 @@ LogChannel gurobilog("gurobilog", "[GurobiBackend] ");
 util::ProgramOption optionGurobiMIPGap(
 		util::_module           = "inference.gurobi",
 		util::_long_name        = "mipGap",
-		util::_description_text = "The Gurobi relative optimality gap.",
-		util::_default_value    = 0.0001);
+		util::_description_text = "The Gurobi relative optimality gap.");
 
 util::ProgramOption optionGurobiMIPFocus(
 		util::_module           = "inference.gurobi",
 		util::_long_name        = "mipFocus",
-		util::_description_text = "The Gurobi MIP focus: 0 = balanced, 1 = feasible solutions, 2 = optimal solution, 3 = bound.",
-		util::_default_value    = 0);
+		util::_description_text = "The Gurobi MIP focus: 0 = balanced, 1 = feasible solutions, 2 = optimal solution, 3 = bound.");
 
 util::ProgramOption optionGurobiTimeout(
 		util::_module           = "inference.gurobi",
@@ -90,18 +88,6 @@ GurobiBackend::initialize(
 		setVerbose(true);
 	else
 		setVerbose(false);
-
-	setMIPGap(optionGurobiMIPGap);
-
-	if (optionGurobiMIPFocus.as<unsigned int>() <= 3)
-		setMIPFocus(optionGurobiMIPFocus.as<unsigned int>());
-	else
-		LOG_ERROR(gurobilog) << "Invalid value for MPI focus!" << std::endl;
-
-	if (optionGurobiTimeout)
-		setTimeout(optionGurobiTimeout.as<double>());
-
-	setNumThreads(optionGurobiNumThreads);
 
 	// add new variables to the model
 
@@ -260,10 +246,40 @@ GurobiBackend::addConstraint(const LinearConstraint& constraint) {
 }
 
 bool
-GurobiBackend::solve(Solution& x, std::string& msg) {
+GurobiBackend::solve(Solution& x, std::string& msg, const LinearSolverBackend::Parameters& parameters) {
+
+	LOG_USER(gurobilog) << "verbose output requested by parameters" << std::endl;
+
+	if (parameters.verbose)
+		setVerbose(true);
+
+	if (optionGurobiNumThreads)
+		setNumThreads(optionGurobiNumThreads);
+	else
+		setNumThreads(parameters.numThreads);
+
+	if (optionGurobiMIPGap)
+		setMIPGap(optionGurobiMIPGap);
+	else
+		setMIPGap(parameters.mipGap);
+
+	if (optionGurobiMIPFocus) {
+
+		if (optionGurobiMIPFocus.as<unsigned int>() <= 3)
+			setMIPFocus(optionGurobiMIPFocus.as<unsigned int>());
+		else
+			LOG_ERROR(gurobilog) << "Invalid value for MPI focus!" << std::endl;
+
+	} else {
+
+		setMIPFocus(parameters.mipFocus);
+	}
 
 	if (optionGurobiDumpIlp)
 		dumpProblem(optionGurobiDumpIlp);
+
+	if (optionGurobiTimeout)
+		setTimeout(optionGurobiTimeout.as<double>());
 
 	GRB_CHECK(GRBupdatemodel(_model));
 
@@ -356,6 +372,8 @@ GurobiBackend::setNumThreads(unsigned int numThreads) {
 
 void
 GurobiBackend::setVerbose(bool verbose) {
+
+	LOG_USER(gurobilog) << "enabling verbose output" << std::endl;
 
 	GRBenv* modelenv = GRBgetenv(_model);
 

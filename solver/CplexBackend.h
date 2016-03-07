@@ -35,30 +35,7 @@ class CplexBackend : public QuadraticSolverBackend {
 
 public:
 
-    struct Parameter {
-
-        Parameter() :
-            mipGap(0.0001),
-            mipFocus(0),
-            numThreads(0),
-            verbose(false) {}
-
-        // The Gurobi relative optimality gap.
-        double mipGap;
-
-        // The Gurobi MIP focus: 0 = balanced, 1 = feasible solutions, 2 =
-        // optimal solution, 3 = bound.
-        unsigned int mipFocus;
-
-        // The number of threads to be used by Gurobi. The default (0) uses all
-        // available CPUs.
-        unsigned int numThreads;
-
-        // Show the gurobi output.
-        bool verbose;
-    };
-
-    CplexBackend(const Parameter& parameter = Parameter());
+    CplexBackend();
 
     virtual ~CplexBackend();
 
@@ -83,7 +60,7 @@ public:
 
     void addConstraint(const LinearConstraint& constraint);
 
-    bool solve(Solution& solution,/* double& value, */ std::string& message);
+    bool solve(Solution& solution,/* double& value, */ std::string& message, const LinearSolverBackend::Parameters& parameters = LinearSolverBackend::Parameters());
 
 private:
 

@@ -60,7 +60,7 @@ public:
 
 	void addConstraint(const LinearConstraint& constraint);
 
-	bool solve(Solution& solution, std::string& message);
+	bool solve(Solution& solution, std::string& message, const LinearSolverBackend::Parameters& params = LinearSolverBackend::Parameters());
 
 	// dump the current problem to a file
 	void dumpProblem(std::string filename);

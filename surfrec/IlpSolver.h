@@ -17,7 +17,7 @@ public:
 
 	struct Parameters {
 
-		Parameters() : enforce_zero_minimum(false), num_neighbors(-1) {}
+		Parameters() : enforce_zero_minimum(false), num_neighbors(-1), num_threads(0) {}
 
 		/**
 		 * If set to true, the ILP ensures that every minimum has a value of 
@@ -31,6 +31,16 @@ public:
 		 * boundary.
 		 */
 		int num_neighbors;
+
+		/**
+		 * The number of threads to use for inference.
+		 */
+		int num_threads;
+
+		/**
+		 * Enable verbose output of the ILP solver.
+		 */
+		bool verbose;
 	};
 
 	/**

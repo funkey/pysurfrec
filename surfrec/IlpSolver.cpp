@@ -14,9 +14,6 @@ IlpSolver::IlpSolver(std::size_t num_nodes, std::size_t num_edges, int num_level
 
 	_graph.reserveNode(num_nodes);
 	_graph.reserveEdge(num_edges);
-
-	SolverFactory factory;
-	_solver = std::unique_ptr<LinearSolverBackend>(factory.createLinearSolverBackend());
 }
 
 IlpSolver::NodeId
@@ -181,6 +178,9 @@ IlpSolver::min_surface(const Parameters& parameters) {
 		}
 	}
 
+	SolverFactory factory;
+	_solver = std::unique_ptr<LinearSolverBackend>(factory.createLinearSolverBackend());
+
 	LOG_DEBUG(ilpsolverlog) << "initialize solver" << std::endl;
 	_solver->initialize(num_vars, Binary);
 	LOG_DEBUG(ilpsolverlog) << "setting objective" << std::endl;
@@ -192,9 +192,13 @@ IlpSolver::min_surface(const Parameters& parameters) {
 	for (auto c : constraints)
 		LOG_ALL(ilpsolverlog) << c << std::endl;
 
+	LinearSolverBackend::Parameters solverParameters;
+	solverParameters.numThreads = parameters.num_threads;
+	solverParameters.verbose    = parameters.verbose;
+
 	LOG_DEBUG(ilpsolverlog) << "solving" << std::endl;
 	std::string message;
-	if (!_solver->solve(_solution, message))
+	if (!_solver->solve(_solution, message, solverParameters))
 		UTIL_THROW_EXCEPTION(
 				LinearSolverBackendException,
 				"linear program could not be solved: " << message);

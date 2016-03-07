@@ -177,7 +177,7 @@ ScipBackend::addConstraint(const LinearConstraint& constraint) {
 }
 
 bool
-ScipBackend::solve(Solution& x, std::string& msg) {
+ScipBackend::solve(Solution& x, std::string& msg, const LinearSolverBackend::Parameters& parameters) {
 
 	LOG_ALL(sciplog) << "solving model" << std::endl;
 

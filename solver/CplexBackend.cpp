@@ -17,8 +17,7 @@
 
 logger::LogChannel cplexlog("cplexlog", "[Cplex] ");
 
-CplexBackend::CplexBackend(const Parameter& parameter) :
-    _parameter(parameter),
+CplexBackend::CplexBackend() :
     model_(env_),
     x_(env_),
     c_(env_),
@@ -214,20 +213,20 @@ CplexBackend::createConstraint(const LinearConstraint& constraint) {
 }
 
 bool
-CplexBackend::solve(Solution& x,/* double& value, */ std::string& msg) {
+CplexBackend::solve(Solution& x,/* double& value, */ std::string& msg, const LinearSolverBackend::Parameters& paramter) {
 
     try {
         cplex_ = IloCplex(model_);
-        setVerbose(_parameter.verbose);
+        setVerbose(parameter.verbose);
 
-        setMIPGap(_parameter.mipGap);
+        setMIPGap(parameter.mipGap);
 
-        if (_parameter.mipFocus <= 3)
-            setMIPFocus(_parameter.mipFocus);
+        if (parameter.mipFocus <= 3)
+            setMIPFocus(parameter.mipFocus);
         else
             LOG_ERROR(cplexlog) << "Invalid value for MIP focus!" << std::endl;
 
-        setNumThreads(_parameter.numThreads);
+        setNumThreads(parameter.numThreads);
 
         if(!cplex_.solve()) {
            LOG_USER(cplexlog) << "failed to optimize. " << cplex_.getStatus() << std::endl;
@@ -266,6 +265,7 @@ CplexBackend::setMIPGap(double gap) {
      cplex_.setParam(IloCplex::EpGap, gap);
 }
 
+A
 void
 CplexBackend::setMIPFocus(unsigned int focus) {
     /*

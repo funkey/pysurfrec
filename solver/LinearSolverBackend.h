@@ -11,6 +11,29 @@ class LinearSolverBackend {
 
 public:
 
+	struct Parameters {
+
+		Parameters() :
+				mipGap(0.0001),
+				mipFocus(0),
+				numThreads(0),
+				verbose(false) {}
+
+		// The relative optimality gap.
+		double mipGap;
+
+		// The MIP focus: 0 = balanced, 1 = feasible solutions, 2 = optimal 
+		// solution, 3 = bound (not supported by all solver backends)
+		unsigned int mipFocus;
+
+		// The number of threads to be used. The default (0) leaves the decision 
+		// to the solver.
+		unsigned int numThreads;
+
+		// Show the verbose output.
+		bool verbose;
+    };
+
 	virtual ~LinearSolverBackend() {}
 
 	/**
@@ -72,7 +95,7 @@ public:
 	 * @param message A status message from the solver.
 	 * @return true, if the optimal value was found.
 	 */
-	virtual bool solve(Solution& solution, std::string& message) = 0;
+	virtual bool solve(Solution& solution, std::string& message, const Parameters& parameters = Parameters()) = 0;
 
 	virtual void dumpProblem(std::string filename) { UTIL_THROW_EXCEPTION(NotYetImplemented, "this solver does not supporting dumping"); }
 };
