@@ -52,7 +52,7 @@ IlpSolver::set_level_costs(NodeId n, const std::vector<double>& costs) {
 }
 
 double
-IlpSolver::min_surface() {
+IlpSolver::min_surface(const Parameters& parameters) {
 
 	std::size_t num_vars = _num_nodes*_num_levels;
 
@@ -133,6 +133,50 @@ IlpSolver::min_surface() {
 				inclusion.setValue(0.0);
 
 				constraints.add(inclusion);
+			}
+		}
+	}
+
+	if (parameters.enforce_zero_minimum) {
+
+		LOG_USER(ilpsolverlog) << "enforcing minima of zero" << std::endl;
+
+		if (parameters.num_neighbors < 0)
+			UTIL_THROW_EXCEPTION(
+					UsageError,
+					"if 'enforce_zero_minimum' is set, 'num_neighbors' has to be set, too.");
+
+		// for each indicator between 1 and _num_levels - 1: if top indicator t 
+		// is 0, one of the neighbors n ∈ N must be zero, too:
+		//
+		//   t=0 ⇒ Σn<|N|
+		//
+		//   Σn - t ≤ |N| - 1 if t=0, one of neighbors has to be 0
+		//                    if t=1, constraint always true
+
+		for (GraphType::NodeIt n(_graph); n != lemon::INVALID; ++n) {
+
+			for (int l = 1; l < _num_levels - 1; l++) {
+
+				LinearConstraint zero_minimum;
+
+				// Σn
+				for (GraphType::IncEdgeIt e(_graph, n); e != lemon::INVALID; ++e) {
+
+					GraphType::Node nb = _graph.oppositeNode(n, e);
+					std::size_t nb_var_num = _graph.id(nb)*_num_levels + l;
+					zero_minimum.setCoefficient(nb_var_num, 1.0);
+				}
+
+				// -t
+				std::size_t t_var_num = _graph.id(n)*_num_levels + l + 1;
+				zero_minimum.setCoefficient(t_var_num, -1.0);
+
+				// ≤ |N| - 1
+				zero_minimum.setRelation(LessEqual);
+				zero_minimum.setValue(parameters.num_neighbors - 1);
+
+				constraints.add(zero_minimum);
 			}
 		}
 	}

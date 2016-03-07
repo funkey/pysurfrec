@@ -57,6 +57,12 @@ BOOST_PYTHON_MODULE(surfrec) {
 			.def(boost::python::vector_indexing_suite<std::vector<double>>())
 			;
 
+	// IlpSolver::Parameters
+	boost::python::class_<IlpSolver::Parameters>("IlpSolverParameters")
+			.def_readwrite("enforce_zero_minimum", &IlpSolver::Parameters::enforce_zero_minimum)
+			.def_readwrite("num_neighbors", &IlpSolver::Parameters::num_neighbors)
+			;
+
 	// IlpSolver
 	boost::python::class_<IlpSolver, boost::noncopyable>("IlpSolver", boost::python::init<std::size_t, std::size_t, int, int>())
 			.def("add_nodes", &IlpSolver::add_nodes)

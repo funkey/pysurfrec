@@ -15,6 +15,24 @@ public:
 
 	typedef std::size_t NodeId;
 
+	struct Parameters {
+
+		Parameters() : enforce_zero_minimum(false), num_neighbors(-1) {}
+
+		/**
+		 * If set to true, the ILP ensures that every minimum has a value of 
+		 * zero (as it should be for distance maps).
+		 */
+		bool enforce_zero_minimum;
+
+		/**
+		 * The number of neighbors for a regular node inside the grid. Needs to 
+		 * be set if enforce_zero_minimum to properly handle nodes at the 
+		 * boundary.
+		 */
+		int num_neighbors;
+	};
+
 	/**
 	 * Create a new IlpSolver solver for the given estimated number 
 	 * of nodes and edges (of the original graph). More nodes and edges can be 
@@ -52,7 +70,7 @@ public:
 	/**
 	 * Find the cost-minimal surface.
 	 */
-	double min_surface();
+	double min_surface(const Parameters& parameters);
 
 	/**
 	 * Return the level where the found surface passes through the column of 
