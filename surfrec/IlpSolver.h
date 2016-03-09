@@ -38,6 +38,12 @@ public:
 		int num_threads;
 
 		/**
+		* Solve the ILP without integrality constraints (i.e., the LP
+		* relaxation). Obtain the surface estimate by rounding the solution.
+		*/
+		bool solve_relaxed_problem;
+
+		/**
 		 * Enable verbose output of the ILP solver.
 		 */
 		bool verbose;

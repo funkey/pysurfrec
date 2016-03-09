@@ -195,7 +195,26 @@ IlpSolver::min_surface(const Parameters& parameters) {
 	_solver = std::unique_ptr<LinearSolverBackend>(factory.createLinearSolverBackend());
 
 	LOG_DEBUG(ilpsolverlog) << "initialize solver" << std::endl;
-	_solver->initialize(num_vars, Binary);
+	if (parameters.solve_relaxed_problem) {
+
+		_solver->initialize(num_vars, Continuous);
+		// we have to force values to be within 0 and 1
+		for (std::size_t i = 0; i < num_vars; i++) {
+			LinearConstraint lower_bound, upper_bound;
+			lower_bound.setCoefficient(i, 1.0);
+			lower_bound.setRelation(GreaterEqual);
+			lower_bound.setValue(0.0);
+			upper_bound.setCoefficient(i, 1.0);
+			upper_bound.setRelation(LessEqual);
+			upper_bound.setValue(1.0);
+			constraints.add(lower_bound);
+			constraints.add(upper_bound);
+		}
+
+	} else {
+
+		_solver->initialize(num_vars, Binary);
+	}
 	LOG_DEBUG(ilpsolverlog) << "setting objective" << std::endl;
 	_solver->setObjective(objective);
 	LOG_DEBUG(ilpsolverlog) << "setting setting constraints" << std::endl;

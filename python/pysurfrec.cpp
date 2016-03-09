@@ -62,6 +62,7 @@ BOOST_PYTHON_MODULE(surfrec) {
 			.def_readwrite("enforce_zero_minimum", &IlpSolver::Parameters::enforce_zero_minimum)
 			.def_readwrite("num_neighbors", &IlpSolver::Parameters::num_neighbors)
 			.def_readwrite("num_threads", &IlpSolver::Parameters::num_threads)
+			.def_readwrite("solve_relaxed_problem", &IlpSolver::Parameters::solve_relaxed_problem)
 			.def_readwrite("verbose", &IlpSolver::Parameters::verbose)
 			;
 
